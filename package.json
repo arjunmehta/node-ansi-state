@@ -1,0 +1,31 @@
+{
+  "name": "ansi-state",
+  "version": "1.0.0",
+  "description": "Save and restore your ANSI states.",
+  "main": "main.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arjunmehta/node-ansi-state.git"
+  },
+  "keywords": [
+    "ansi",
+    "state",
+    "colours",
+    "colors",
+    "color",
+    "colour",
+    "styles",
+    "save",
+    "restore",
+    "update"
+  ],
+  "author": "Arjun Mehta",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arjunmehta/node-ansi-state/issues"
+  },
+  "homepage": "https://github.com/arjunmehta/node-ansi-state"
+}
