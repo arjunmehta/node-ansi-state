@@ -4,7 +4,7 @@
   "description": "Save and restore your ANSI states.",
   "main": "main.js",
   "scripts": {
-    "test": "node test/test.js"
+    "test": "nodeunit test/test.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/arjunmehta/node-ansi-state/issues"
   },
-  "homepage": "https://github.com/arjunmehta/node-ansi-state"
+  "homepage": "https://github.com/arjunmehta/node-ansi-state",
+  "devDependencies": {
+    "nodeunit": "~0.9.0"
+  }
 }
