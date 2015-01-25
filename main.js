@@ -1,10 +1,16 @@
+var util = require('util');
+var stream = require('stream');
+var PassThrough = stream.PassThrough || require('readable-stream').PassThrough;
+
 var ansi_styles = require('./lib/ansi_styles'),
     ansi_styles_flat = {},
     color_regex = /\x1b\[[0-9;]*m/g,
     attr;
 
+util.inherits(ANSIState, PassThrough);
 
-// build flatted ansi_styles table object with each element of the form:
+
+// build ansi_styles_flat table object with each element of the form:
 // code: [attribute, description]
 
 for (var attr_name in ansi_styles) {
@@ -19,14 +25,37 @@ for (var attr_name in ansi_styles) {
 
 function ANSIState(legacy) {
 
+    var feed = '',
+        last_match = '',
+        stream_match = [],
+        _this = this;
+
+    PassThrough.call(this);
+
     this.attrs = {};
-    this.reset = true;
+    this.is_reset = true;
+    this.reset();
+    this.setEncoding('utf8');
 
-    this.resetState();
+    this.on('readable', function() {
+            feed += _this.read();
+            if (feed.indexOf('\033') === -1) {
+                feed = '';
+            } else {
+                stream_match = feed.match(color_regex);
+                if (stream_match.length > 0) {
+                    last_match = stream_match[stream_match.length - 1];                    
+                    feed = feed.slice(feed.lastIndexOf(last_match) + last_match.length);
+                    console.log(JSON.stringify(feed), JSON.stringify(last_match));
+                _this.updateWithArray(stream_match);
+            }
+        }
+        console.log("FEED", JSON.stringify(_this.code), JSON.stringify(feed));
+    });
 
-    if (legacy !== undefined) {
-        this.updateWithState(legacy);
-    }
+if (legacy !== undefined) {
+    this.update(legacy);
+}
 }
 
 
@@ -39,12 +68,49 @@ Object.defineProperty(ANSIState.prototype, 'code', {
 });
 
 
-// ANSI state prototype methods
+// ANSI state main API prototype methods
 
-ANSIState.prototype.update = function(codes) {
+ANSIState.prototype.update = function(date) {
+
+    if (Array.isArray(data)) {
+        this.updateWithArray(data);
+    } else if (typeof data === 'string') {
+        this.updateWithString(data);
+    } else if (data instanceof ANSIState) {
+        this.updateWithState(data);
+    }
+
+    return this;
+};
+
+ANSIState.prototype.restore = function(date) {
+
+    this.push(this.code);
+    return this;
+};
+
+ANSIState.prototype.reset = function() {
+
+    var attributes = this.attrs;
+
+    for (var attr_name in ansi_styles) {
+        attributes[attr_name] = null;
+    }
+
+    this.is_reset = true;
+    this.xterm_foreground = undefined;
+    this.xterm_background = undefined;
+
+    return this;
+};
+
+
+// integral helper methods
+
+ANSIState.prototype.updateRawArray = function(codes) {
 
     var code;
-    this.reset = false;
+    this.is_reset = false;
 
     for (var i = 0; i < codes.length; i++) {
         code = codes[i];
@@ -60,7 +126,7 @@ ANSIState.prototype.update = function(codes) {
 ANSIState.prototype.updateWithCode = function(code) {
 
     if (code === '0') {
-        this.resetState();
+        this.reset();
     } else {
         if (ansi_styles_flat[code]) {
             this.attrs[ansi_styles_flat[code][0]] = code;
@@ -88,10 +154,10 @@ ANSIState.prototype.updateWithState = function(ansi_state) {
 
     var state_attributes = ansi_state.attrs;
 
-    if (ansi_state.reset === true) {
+    if (ansi_state.is_reset === true) {
         return;
     } else {
-        this.reset = false;
+        this.is_reset = false;
         for (var attr_name in state_attributes) {
             this.attrs[attr_name] = state_attributes[attr_name];
         }
@@ -111,11 +177,15 @@ ANSIState.prototype.updateWithArray = function(codes) {
     if (codes !== null) {
         for (var i = 0; i < codes.length; i++) {
             code = codes[i];
-            codeList = codeList.concat(code.replace(/[\x1b\[|m]/g, '').split(';'));
+            if (typeof code === 'string') {
+                codeList = codeList.concat(code.replace(/[\x1b\[|m]/g, '').split(';'));
+            } else if (typeof code === 'number') {
+                codeList.push('' + code);
+            }
         }
     }
 
-    this.update(codeList);
+    this.updateRawArray(codeList);
     return this;
 };
 
@@ -132,22 +202,7 @@ ANSIState.prototype.updateWithString = function(line) {
         }
     }
 
-    this.update(codeList);
-
-    return this;
-};
-
-ANSIState.prototype.resetState = function() {
-
-    var attributes = this.attrs;
-
-    for (var attr_name in ansi_styles) {
-        attributes[attr_name] = null;
-    }
-
-    this.reset = true;
-    this.xterm_foreground = undefined;
-    this.xterm_background = undefined;
+    this.updateRawArray(codeList);
 
     return this;
 };
@@ -159,7 +214,7 @@ ANSIState.prototype.buildCode = function() {
         val,
         i = 0;
 
-    if (this.reset === true) {
+    if (this.is_reset === true) {
 
         line += '0m';
 
