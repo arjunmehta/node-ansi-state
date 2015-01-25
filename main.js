@@ -153,7 +153,8 @@ ANSIState.prototype.updateWithState = function(ansi_state) {
     var state_attributes = ansi_state.attrs;
 
     if (ansi_state.is_reset === true) {
-        return;
+        this.is_reset = true;
+        return this;
     } else {
         this.is_reset = false;
         for (var attr_name in state_attributes) {
