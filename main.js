@@ -68,7 +68,7 @@ Object.defineProperty(ANSIState.prototype, 'code', {
 
 // ANSI state main API prototype methods
 
-ANSIState.prototype.update = function(date) {
+ANSIState.prototype.update = function(data) {
 
     if (Array.isArray(data)) {
         this.updateWithArray(data);
@@ -176,7 +176,7 @@ ANSIState.prototype.updateWithArray = function(codes) {
     if (codes !== null) {
         for (var i = 0; i < codes.length; i++) {
             code = codes[i];
-            if (typeof code === 'string') {
+            if (typeof code === 'string' && code[code.length -1] === 'm') {
                 codeList = codeList.concat(code.replace(/[\x1b\[|m]/g, '').split(';'));
             } else if (typeof code === 'number') {
                 codeList.push('' + code);

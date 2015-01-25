@@ -18,90 +18,150 @@ npm install --save ansi-state
 ### Include
 
 ```javascript
-var ANSIState = require('ansi-state');
+var ANSIState = require('ansi-state')
 ```
 
 ### Create a New State
 Instantiate a new state with the constructor:
 
 ```javascript
-var state = new ANSIState();
+var state = new ANSIState()
 ```
 
 ### Manually Save ANSI Style Codes
-You can `update` the state by calling the corresponding method on it and passing in a string or array that contains ansi style codes.
+You can `update` the state manually by calling the corresponding method on it and passing in a string or array that contains ansi style codes. Only the most recently received codes for various attributes will be kept (ie. you can only have one foreground colour at a time). This module keeps track of all of that for you!
 
 ```javascript
-state.update('\033[32mHi there! \033[31mRed text');
+state.update('\033[32mHi there! \033[31mRed text')
 //current state becomes: \033[31m
-state.update('\033[1mBolding the text too');
+
+state.update('\033[1mBolding the text too')
 //current state becomes: \033[1;31m
-state.update('\033[34;38;5;211mxterm colors too!');
+
+state.update('\033[34;38;5;211mxterm colors too!')
 //current state becomes: \033[1;38;5;211m
 ```
 
 ### Automatically Save by Writing/Piping
+Because states are streamable, they can be fixed in your pipeline or written to like any other writeable stream. This is handy if you want to automatically capture codes that are on their way to a particular stream (ie. stdout).
 
 ```javascript
-// Pipe to automatically capture whatever style codes are written to stdout
-process.stdout.pipe(state);
-// OR manually
-state.write('\033[32mHi there! This is some \033[31mred text');
+some_stream.pipe(state).pipe(process.stdout);
+some_stream.write('\033[33mHi there!')
+// current state becomes: \033[33m
+
+state.write('\033[32mHi there! This is some \033[31mred text')
+// current state becomes: \033[31m
+
+state.write('\033')
+state.write('[3')
+state.write('7m')
+// current state becomes: \033[37m
+
+state.write('\033[1mBolded \033[2mFaint \033[22mNormal Intensity')
+// current state becomes: \033[22;37m
 ```
 
 ### Restore ANSI State
+Great, so you've kept tabs on the current ansi state, now what if you want to restore that state some place? Well you can output the state's ansi code manually, or you can call the `restore` method to push the code to wherever it is piped to:
 
 ```javascript
-process.stdout.write(state.code); // outputs current state code, same as restore()
+process.stdout.write(state.code) // outputs current state code to stdout
+// OR
+state.pipe(process.stdout)
+state.restore() // will push state.code to wherever it is piped (ie. stdout).
+```
+
+### Reset ANSI State
+You can reset the state by simply calling the `reset` method on the state.
+
+```javascript
+state.reset() // sets code to '\033[0m'
+```
+
+You may want to then write to the terminal with the reset code:
+```javascript
+process.stdout.write(state.reset().code)
+state.reset().restore() // if you are piping the state to some place
 ```
 
 ### Create a New ANSI State from an Old One
 
 ```javascript
-var new_state = new ANSIState(state);
+var new_state = new ANSIState(state)
 // OR
-var new_state = new ANSIState(state.code);
+var new_state = new ANSIState(state.code)
 ```
-
-
-### Reset ANSI State
-
-```javascript
-// resets the state to the default terminal state
-state.reset(); // '\033[0m'
-// OR
-process.stdout.write(state.reset().code);
-```
-
 
 
 ## API
-### state.update()
-### state.reset()
-### state.code
-### state.restore()
-### state.write
-### state.pipe
-
-// OR
-state.update(['\033[32m', '\033[31m', '\033[34;38;5;211m']);
-
-// OR
-state.update([32, 31, 34, 38, 5, 211]);
-
-
-
-## Use Scenario
-
-Imagine you have many different text inputs and they all have different ansi styles, but they are being written/merged to the same output (ie. stdout). The way ansi style codes work, you'll need to find a way to restore the style as you switch between outputting the different inputs! This module provides what you need to switch between various ansi style states. View the streams example to get a good idea of how to implement this.
+### new ANSIState(legacy) Constructor
+Creates a new instace of `ANSIState`. `data` can be any of type **String**, **Array** or another **ANSIState** instance.
 
 ```javascript
-stateA.write("\033[31mthis is red");
-stateB.write("\033[32mthis is green");
-stateC.write("\033[37mthis is blue");
+var state = new ANSIState('\033[1;32m');
+```
+
+### state.update(data)
+Updates the ansi style state contained in the `ANSIState` instance. `data` can be any of type **String**, **Array** or another **ANSIState** instance. The array can be of the form `['\033[32m', '\033[1;22;34m']` (usually what is returned from a regex match) or `[32, 1, 22, 34]`
+
+```javascript
+state.update('\033[32mHi there! \033[31mRed text')
+//current state becomes: \033[31m
+
+state.update('\033[1mBolding the text too')
+//current state becomes: \033[1;31m
+
+state.update('\033[34;38;5;211mxterm colors too!')
+//current state becomes: \033[1;38;5;211m
+```
+
+### state.write(data)
+The stream class write method on the `ANSIState` instance. `data` must be of type `String`.
+
+```javascript
+state.write('\033[32mHi there! This is some \033[31mred text')
+// current state becomes: \033[31m
+
+state.write('\033')
+state.write('[3')
+state.write('7m')
+// current state becomes: \033[37m
+```
+
+### state.pipe(stream)
+Pipe any data passed into the `ANSIState` to the supplied stream. `stream` can be any writeable stream.
+
+```javascript
+some_stream.pipe(state).pipe(process.stdout);
+```
+
+### state.reset()
+Resets the current `ANSIState` instance to the ansi reset code `\033[0m`.
+
+```javascript
+state.reset()
+```
+
+### state.restore()
+Pushes to any piped streams the `ANSIState` instance's code.
+
+```javascript
+state.pipe(process.stdout)
+state.restore() // will push state.code to wherever it is piped (ie. stdout).
+```
+
+### state.code
+Returns the current ansi code for the `ANSIState` instance.
+
+```javascript
+state.update('\033[32mHi there! \033[31mRed text')
+console.log(JSON.stringfy(state.code)) // "\u001b[31m"
 ```
 
 
-
 ## License
-MIT, 2014 Arjun Mehta
+```
+The MIT License (MIT)
+Copyright (c) 2014 Arjun Mehta
+```
