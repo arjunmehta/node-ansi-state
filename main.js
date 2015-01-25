@@ -215,7 +215,7 @@ ANSIState.prototype.buildCode = function() {
 
     if (this.is_reset === true) {
 
-        line += '0m';
+        line += '0';
 
     } else {
 
@@ -232,11 +232,9 @@ ANSIState.prototype.buildCode = function() {
                 i++;
             }
         }
-
-        line += 'm';
     }
 
-    return line;
+    return line + 'm';
 };
 
 
