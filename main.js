@@ -38,24 +38,22 @@ function ANSIState(legacy) {
     this.setEncoding('utf8');
 
     this.on('readable', function() {
-            feed += _this.read();
-            if (feed.indexOf('\033') === -1) {
-                feed = '';
-            } else {
-                stream_match = feed.match(color_regex);
-                if (stream_match.length > 0) {
-                    last_match = stream_match[stream_match.length - 1];                    
-                    feed = feed.slice(feed.lastIndexOf(last_match) + last_match.length);
-                    console.log(JSON.stringify(feed), JSON.stringify(last_match));
+        feed += _this.read();
+        if (feed.indexOf('\033') === -1) {
+            feed = '';
+        } else {
+            stream_match = feed.match(color_regex);
+            if (stream_match.length > 0) {
+                last_match = stream_match[stream_match.length - 1];
+                feed = feed.slice(feed.lastIndexOf(last_match) + last_match.length);
                 _this.updateWithArray(stream_match);
             }
         }
-        console.log("FEED", JSON.stringify(_this.code), JSON.stringify(feed));
     });
 
-if (legacy !== undefined) {
-    this.update(legacy);
-}
+    if (legacy !== undefined) {
+        this.update(legacy);
+    }
 }
 
 
