@@ -37,8 +37,8 @@ function ANSIState(legacy) {
     this.reset();
     this.setEncoding('utf8');
 
-    this.on('readable', function() {
-        feed += _this.read();
+    this.on('data', function(chunk) {
+        feed += chunk;
         if (feed.indexOf('\033') === -1) {
             feed = '';
         } else {
@@ -105,7 +105,7 @@ ANSIState.prototype.reset = function() {
 
 // integral helper methods
 
-ANSIState.prototype.updateRawArray = function(codes) {
+ANSIState.prototype.updateWithRawArray = function(codes) {
 
     var code;
     this.is_reset = false;
@@ -184,7 +184,7 @@ ANSIState.prototype.updateWithArray = function(codes) {
         }
     }
 
-    this.updateRawArray(codeList);
+    this.updateWithRawArray(codeList);
     return this;
 };
 
@@ -201,7 +201,7 @@ ANSIState.prototype.updateWithString = function(line) {
         }
     }
 
-    this.updateRawArray(codeList);
+    this.updateWithRawArray(codeList);
 
     return this;
 };
