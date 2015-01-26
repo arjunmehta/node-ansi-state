@@ -2,12 +2,13 @@ var ANSIState = require('../main');
 var ansi_styles = require('../lib/ansi_styles');
 
 exports['Exported Properly'] = function(test) {
-    test.expect(2);
+    test.expect(3);
 
     var state = new ANSIState();
 
     test.equal(typeof ANSIState, 'function');
     test.equal(typeof state, 'object');
+    test.equal(state.code, '\033[m');
 
     test.done();
 };
