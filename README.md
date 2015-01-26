@@ -3,8 +3,8 @@ Use this module to save and restore ANSI colors and style states.
 
 Sometimes you need to keep the track of multiple ANSI style states, though you may not know what they are. This module provides:
 
-- **ANSI state management and restoration**
 - **Full ANSI style code support, including: foreground & background colour (xterm colours included!), intensity, italic, underline, blink, polarity, conceal, strikethrough, font, framed and overlined styles.**
+- **Check all the state style attributes listed above**
 - **A streamable interface (pipe or write to update).**
 - **Create multiple instances to save multiple style states.**
 - **Restore any state instance at any time.**
@@ -66,8 +66,18 @@ some_stream.write('\033[33mHi there!')
 // current state becomes: \033[33m
 ```
 
+### Check State Attributes
+You can check certain style attributes at any time, easily:
+```javascript
+var state = new ANSIState('\033[32mHi there! \033[31mRed text, \033[1;48;5;21m')
+console.log(state.foreground) // red
+console.log(state.background, state.xterm_background) // xterm color definition, 21
+console.log(state.intensity) // bold
+console.log(state.blink) // null
+```
+
 ### Restore ANSI State
-Great, so you've been able to keep tabs on the current ansi state, now what if you want to restore that state some place? Well you can output the state's ansi code manually:
+Great, so you've been able to keep tabs on the current ansi state, now what if you want to restore that state some place? Well you can output the state's ansi code simply:
 
 ```javascript
 process.stdout.write(state.code) // outputs current state code to stdout
@@ -117,7 +127,7 @@ var state = new ANSIState('\033[1;32m');
 ```
 
 ### state.update(data)
-Updates the ansi style state contained in the `ANSIState` instance. `data` can be any of type **String**, **Array** or another **ANSIState** instance. The array can be of the form `['\033[32m', '\033[1;22;34m']` (usually what is returned from a regex match) or `[32, 1, 22, 34]`
+Updates the ansi style state contained in the `ANSIState` instance. `data` can be any of type **String**, **Array** or another **ANSIState** instance. The array can be of the form `['\033[32m', '\033[1;22;34m']` (usually what is returned from a regex match) or `[32, 1, 22, 34]`.
 
 ```javascript
 state.update('\033[32mHi there! \033[31mRed text')
@@ -171,6 +181,54 @@ Returns the current ansi code for the `ANSIState` instance.
 ```javascript
 state.update('\033[32mHi there! \033[31mRed text')
 console.log(JSON.stringfy(state.code)) // "\u001b[31m"
+```
+
+### state[attribute_name]
+Returns the human readable value of the `attribute_name` for the `ANSIState` instance. You can use any of the following attributes:
+
+- **intensity**
+- **italic**
+- **underline**
+- **blink**
+- **polarity**
+- **conceal**
+- **strikethrough**
+- **font**
+- **foreground**
+- **background**
+- **framed**
+- **overlined**
+
+The value of each will be `null` if not set. If the foreground or background is set to `xterm color definition` you can obtain the corresponding definition code by using `state.xterm_foreground` or `state.xterm_background` respectively.
+
+```javascript
+state.update('\033[32mHi there! \033[31mRed text, \033[1;48;5;21m')
+console.log(state['foreground']) // red
+console.log(state.background) // xterm color definition
+console.log(state.xterm_background) // [5, 21]
+console.log(state.intensity) // bold
+```
+
+### state.attributes
+Returns the current attribute set for the `ANSIState` instance.
+
+```javascript
+state.update('\033[32mHi there! \033[31mRed text, \033[1;48;5;21m')
+console.log(state.attributes)
+// {
+//     intensity: '1',
+//     italic: null,
+//     underline: null,
+//     blink: null,
+//     polarity: null,
+//     conceal: null,
+//     strikethrough: null,
+//     font: null,
+//     foreground: '31',
+//     background: '48',
+//     framed: null,
+//     overlined: null
+// }
 ```
 
 
