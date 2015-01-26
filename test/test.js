@@ -89,6 +89,8 @@ exports['Xterm Colours'] = function(test) {
     state.update("This is a test with xterm RGB colours, \033[38;2;11;22;255mforeground and \033[48;2;77;11;0mbackground");
     test.equal(state.code, "\033[1;38;2;11;22;255;48;2;77;11;0m");
 
+    // console.log(state.intensity, state.foreground, state.background, state.xterm_background);
+
     test.done();
 };
 
@@ -107,11 +109,31 @@ exports['Mega Style Check'] = function(test) {
             if (code === '38' || code === '48') {
                 continue;
             }
-            test.equal(state.code, '\033[' + legacy_codes.join(';') + ((legacy_codes.length > 0) ? ';' : '') + code + 'm')
+            test.equal(state.code, '\033[' + legacy_codes.join(';') + ((legacy_codes.length > 0) ? ';' : '') + code + 'm');
         }
         legacy_codes.push(code);
     }
 
+    test.done();
+};
+
+exports['Ignore Non-Style Codes'] = function(test) {
+    test.expect(1);
+
+    var state = new ANSIState([
+        '\033[32;22m',
+        '\033[',
+        '\033I',
+        '\0331',
+        '\033[34C',
+        '\033[37C',
+        '\033[1K',
+        '\033[2;1y',
+        '\0337',
+        '\033[31m',
+    ]);
+
+    test.equal(state.code, '\033[22;31m');
     test.done();
 };
 
