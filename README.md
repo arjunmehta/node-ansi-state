@@ -73,7 +73,7 @@ You can check certain style attributes at any time, easily:
 ```javascript
 var state = new ANSIState('\033[32mHi there! \033[31mRed text, \033[1;48;5;21m')
 console.log(state.foreground) // red
-console.log(state.background, state.xterm_background) // xterm color definition, 21
+console.log(state.background, state.xterm_background) // xterm color definition, [5, 21]
 console.log(state.intensity) // bold
 console.log(state.blink) // null
 ```
