@@ -3,6 +3,7 @@ Use this module to save and restore ANSI colors and style states.
 
 Sometimes you need to keep the track of multiple ANSI style states, though you may not know what they are. This module provides:
 
+- **ANSI state management and restoration**
 - **Full ANSI style code support, including: foreground & background colour (xterm colours included!), intensity, italic, underline, blink, polarity, conceal, strikethrough, font, framed and overlined styles.**
 - **A streamable interface (pipe or write to update).**
 - **Create multiple instances to save multiple style states.**
@@ -46,10 +47,6 @@ state.update('\033[34;38;5;211mxterm colors too!')
 Because states are streamable, they can be fixed in your pipeline or written to like any other writeable stream. This is handy if you want to automatically capture codes that are on their way to a particular stream (ie. stdout).
 
 ```javascript
-some_stream.pipe(state).pipe(process.stdout);
-some_stream.write('\033[33mHi there!')
-// current state becomes: \033[33m
-
 state.write('\033[32mHi there! This is some \033[31mred text')
 // current state becomes: \033[31m
 
@@ -62,12 +59,22 @@ state.write('\033[1mBolded \033[2mFaint \033[22mNormal Intensity')
 // current state becomes: \033[22;37m
 ```
 
+Or piping from and to other streams:
+```javascript
+some_stream.pipe(state).pipe(process.stdout);
+some_stream.write('\033[33mHi there!')
+// current state becomes: \033[33m
+```
+
 ### Restore ANSI State
-Great, so you've kept tabs on the current ansi state, now what if you want to restore that state some place? Well you can output the state's ansi code manually, or you can call the `restore` method to push the code to wherever it is piped to:
+Great, so you've been able to keep tabs on the current ansi state, now what if you want to restore that state some place? Well you can output the state's ansi code manually:
 
 ```javascript
 process.stdout.write(state.code) // outputs current state code to stdout
-// OR
+```
+
+Or if you've set a writeable stream to pipe to, you can just call the `restore` method.
+```javascript
 state.pipe(process.stdout)
 state.restore() // will push state.code to wherever it is piped (ie. stdout).
 ```
@@ -82,10 +89,17 @@ state.reset() // sets code to '\033[0m'
 You may want to then write to the terminal with the reset code:
 ```javascript
 process.stdout.write(state.reset().code)
-state.reset().restore() // if you are piping the state to some place
+```
+
+And of course, if you are piping to another stream:
+```javascript
+state.pipe(process.stdout)
+state.reset().restore()
 ```
 
 ### Create a New ANSI State from an Old One
+
+Finally, you can fork your state from an existing one really easily:
 
 ```javascript
 var new_state = new ANSIState(state)
@@ -161,7 +175,5 @@ console.log(JSON.stringfy(state.code)) // "\u001b[31m"
 
 
 ## License
-```
-The MIT License (MIT)
-Copyright (c) 2014 Arjun Mehta
-```
+`The MIT License (MIT)`
+`Copyright (c) 2014 Arjun Mehta`
