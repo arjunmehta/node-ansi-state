@@ -6,7 +6,7 @@ Use this module to save and restore ANSI colors and style states.
 Sometimes you need to keep the track of multiple ANSI style states, though you may not know what they are. This module provides:
 
 - **Full ANSI style code support, including: foreground & background colour (xterm colours included!), intensity, italic, underline, blink, polarity, conceal, strikethrough, font, framed and overlined styles.**
-- **The ability to check all the state style attributes listed above**
+- **The ability to check all the state style attributes listed above.**
 - **A streamable interface (pipe or write to update).**
 - **The ability to create multiple instances to save multiple style states.**
 - **Restore any state instance at any time.**
