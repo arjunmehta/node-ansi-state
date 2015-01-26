@@ -82,8 +82,9 @@ console.log(state.blink) // null
 Your `ANSIState` instance holds an efficient ansi style escape code for the current ansi state, accessible by its `code` property:
 
 ```javascript
+var state = new ANSIState('\033[32mHi there! \033[31mRed text, \033[1;48;5;21m')
 console.log(state.code + 'This is logged in the current ansi state.');
-console.log('The current ansi state is:', JSON.stringify(state.code));
+console.log('The current ansi state is:', JSON.stringify(state.code)); // "\033[1;31;48;5;21m"
 ```
 
 ### Restore ANSI State
