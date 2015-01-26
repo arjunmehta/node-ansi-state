@@ -78,6 +78,14 @@ console.log(state.intensity) // bold
 console.log(state.blink) // null
 ```
 
+### The Current ANSI State Code
+Your `ANSIState` instance holds an efficient ansi style escape code for the current ansi state, accessible by its `code` property:
+
+```javascript
+console.log(state.code + 'This is logged in the current ansi state.');
+console.log('The current ansi state is:', JSON.stringify(state.code));
+```
+
 ### Restore ANSI State
 Great, so you've been able to keep tabs on the current ansi state, now what if you want to restore that state some place? Well you can output the state's ansi code simply:
 
