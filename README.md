@@ -1,4 +1,6 @@
 # node-ansi-state
+[![Build Status](https://travis-ci.org/arjunmehta/node-ansi-state.svg?branch=master)](https://travis-ci.org/arjunmehta/node-ansi-state)
+
 Use this module to save and restore ANSI colors and style states.
 
 Sometimes you need to keep the track of multiple ANSI style states, though you may not know what they are. This module provides:
@@ -230,6 +232,7 @@ console.log(state.attributes)
 //     overlined: null
 // }
 ```
+
 
 
 ## License
