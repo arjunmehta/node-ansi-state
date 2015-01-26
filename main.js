@@ -32,9 +32,9 @@ function ANSIState(legacy) {
 
     PassThrough.call(this);
 
-    this.attrs = {};
-    this.is_reset = true;
+    this.attrs = {};    
     this.reset();
+    this.is_reset = false;
     this.setEncoding('utf8');
 
     this.on('data', function(chunk) {
@@ -64,6 +64,15 @@ Object.defineProperty(ANSIState.prototype, 'code', {
         return this.buildCode();
     }
 });
+
+Object.defineProperty(ANSIState.prototype, 'attributes', {
+    get: function() {
+        return this.attrs;
+    }
+});
+
+addAliasesToPrototype(ANSIState.prototype, ansi_styles);
+
 
 
 // ANSI state main API prototype methods
@@ -176,7 +185,7 @@ ANSIState.prototype.updateWithArray = function(codes) {
     if (codes !== null) {
         for (var i = 0; i < codes.length; i++) {
             code = codes[i];
-            if (typeof code === 'string' && code[code.length -1] === 'm') {
+            if (typeof code === 'string' && code[code.length - 1] === 'm') {
                 codeList = codeList.concat(code.replace(/[\x1b\[|m]/g, '').split(';'));
             } else if (typeof code === 'number') {
                 codeList.push('' + code);
@@ -205,6 +214,8 @@ ANSIState.prototype.updateWithString = function(line) {
 
     return this;
 };
+
+
 
 ANSIState.prototype.buildCode = function() {
 
@@ -248,6 +259,26 @@ function xtermColor(codes, i) {
         return codes.splice(i + 1, 2);
     }
 }
+
+
+function addAliasesToPrototype(proto, styles) {
+    var propertiesObj = {};
+    for (var attr in styles) {
+        propertiesObj[attr] = createAliasObject(attr);
+    }
+
+    Object.defineProperties(proto, propertiesObj);
+}
+
+function createAliasObject(alias_name) {
+    return {
+        enumerable: true,
+        get: function() {
+            return ansi_styles[alias_name][this.attrs[alias_name]].toLowerCase();
+        }
+    };
+}
+
 
 
 module.exports = exports = ANSIState;
