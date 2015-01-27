@@ -130,7 +130,7 @@ var new_state = new ANSIState(state.code)
 
 
 ## API
-### new ANSIState(legacy) Constructor
+### Constructor: new ANSIState(legacy)
 Creates a new instace of `ANSIState`. `data` can be any of type **String**, **Array** or another **ANSIState** instance.
 
 ```javascript
@@ -243,5 +243,5 @@ console.log(state.attributes)
 ```
 
 ## License
-The MIT License (MIT)
-Copyright (c) 2014 Arjun Mehta
+### The MIT License (MIT)
+### Copyright (c) 2014 Arjun Mehta
