@@ -74,7 +74,6 @@ Object.defineProperty(ANSIState.prototype, 'attributes', {
 addAliasesToPrototype(ANSIState.prototype, ansi_styles);
 
 
-
 // ANSI state main API prototype methods
 
 ANSIState.prototype.update = function(data) {
