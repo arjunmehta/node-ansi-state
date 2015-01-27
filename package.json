@@ -1,6 +1,6 @@
 {
   "name": "ansi-state",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Save and restore your ANSI states.",
   "main": "main.js",
   "scripts": {
