@@ -215,8 +215,6 @@ ANSIState.prototype.updateWithString = function(line) {
     return this;
 };
 
-
-
 ANSIState.prototype.buildCode = function() {
 
     var attributes = this.attrs,
@@ -249,6 +247,8 @@ ANSIState.prototype.buildCode = function() {
 };
 
 
+// help methods
+
 function xtermColor(codes, i) {
 
     var type = codes[i + 1];
@@ -259,7 +259,6 @@ function xtermColor(codes, i) {
         return codes.splice(i + 1, 2);
     }
 }
-
 
 function addAliasesToPrototype(proto, styles) {
     var propertiesObj = {};
@@ -281,7 +280,6 @@ function createAliasObject(alias_name) {
         }
     };
 }
-
 
 
 module.exports = exports = ANSIState;
