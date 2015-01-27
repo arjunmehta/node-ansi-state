@@ -15,7 +15,7 @@ exports['Exported Properly'] = function(test) {
 
 exports['Basic Write and Pipe'] = function(test) {
     test.expect(1);
-    
+
     var state = new ANSIState();
 
     state.pipe(process.stdout);
@@ -118,7 +118,7 @@ exports['Mega Style Check'] = function(test) {
     test.done();
 };
 
-exports['Ignore Non-Style Codes'] = function(test) {
+exports['Ignore Non-Style ANSI Codes'] = function(test) {
     test.expect(1);
 
     var state = new ANSIState([
