@@ -243,5 +243,5 @@ console.log(state.attributes)
 ```
 
 ## License
-`The MIT License (MIT)`
-`Copyright (c) 2014 Arjun Mehta`
+The MIT License (MIT)
+Copyright (c) 2014 Arjun Mehta
