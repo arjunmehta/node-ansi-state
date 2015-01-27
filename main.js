@@ -32,7 +32,7 @@ function ANSIState(legacy) {
 
     PassThrough.call(this);
 
-    this.attrs = {};    
+    this.attrs = {};
     this.reset();
     this.is_reset = false;
     this.setEncoding('utf8');
@@ -274,7 +274,10 @@ function createAliasObject(alias_name) {
     return {
         enumerable: true,
         get: function() {
-            return ansi_styles[alias_name][this.attrs[alias_name]].toLowerCase();
+            if (this.attrs[alias_name] !== null) {
+                return ansi_styles[alias_name][this.attrs[alias_name]].toLowerCase();
+            }
+            return null;
         }
     };
 }
