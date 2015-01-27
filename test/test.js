@@ -15,7 +15,7 @@ exports['Exported Properly'] = function(test) {
 
 exports['Basic Write and Pipe'] = function(test) {
     test.expect(1);
-
+    
     var state = new ANSIState();
 
     state.pipe(process.stdout);
@@ -135,6 +135,28 @@ exports['Ignore Non-Style Codes'] = function(test) {
     ]);
 
     test.equal(state.code, '\033[22;31m');
+    test.done();
+};
+
+exports['Check Attributes'] = function(test) {
+    test.expect(3);
+
+    var state = new ANSIState([
+        '\033[32;22m',
+        '\033[',
+        '\033I',
+        '\0331',
+        '\033[34C',
+        '\033[37C',
+        '\033[1K',
+        '\033[2;1y',
+        '\0337',
+        '\033[31m',
+    ]);
+
+    test.equal(state.foreground, 'red');
+    test.equal(state.intensity, 'normal intensity');
+    test.equal(state.strikethrough, null);
     test.done();
 };
 
