@@ -1,12 +1,12 @@
 # node-ansi-state
 [![Build Status](https://travis-ci.org/arjunmehta/node-ansi-state.svg?branch=master)](https://travis-ci.org/arjunmehta/node-ansi-state)
 
-Use this module to save and restore ANSI colors and style states.
+Use this module to capture the state of your ANSI colors and styles, and restore them at another time and/or place.
 
-Sometimes you need to keep the track of multiple ANSI style states, though you may not know what they are. This module provides:
+Sometimes you need to keep track of multiple ANSI style states, though you may not know what they are. This module provides:
 
-- **Full ANSI style code support, including: foreground & background colour (xterm colours included!), intensity, italic, underline, blink, polarity, conceal, strikethrough, font, framed and overlined styles.**
-- **The ability to check all the state style attributes listed above.**
+- **Full ANSI style code capturing, including: foreground & background colour (xterm colours too!), intensity, italic, underline, blink, polarity, conceal, strikethrough, font, framed and overlined styles.**
+- **The ability to check all the state style attributes listed above.`**
 - **A streamable interface (pipe or write to update).**
 - **The ability to create multiple instances to save multiple style states.**
 - **Restore any state instance at any time.**
